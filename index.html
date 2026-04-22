@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>SAR MUZ01 Inspection</title>
+<style>
+:root{--navy:#003B6F;--ok:#1A7A45;--ok-bg:#EAF6EF;--er:#B5291B;--er-bg:#FDEDEB;--wn:#A06C0A;--wn-bg:#FEF7E6;--inf:#1B5E8A;--inf-bg:#EAF3FB;--bg:#EDF1F7;--bdr:#D1DAE6;--muted:#6B7D90;--txt:#1C2B3A}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt);padding-bottom:30px}
+.hdr{position:sticky;top:0;z-index:100;background:var(--navy);color:#fff;padding:12px 14px 10px}
+.hdr h1{font-size:14px;font-weight:700}.hdr p{font-size:10px;opacity:.7;margin-top:1px}
+.hdr-row{display:flex;align-items:center;justify-content:space-between}
+.new-btn{background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:6px;padding:7px 12px;font-size:11px;font-weight:700}
+.ib{background:#fff;display:flex;gap:5px;padding:8px 10px;border-bottom:1px solid var(--bdr)}
+.inf{flex:1;min-width:80px}
+.inf label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+.inf input,.inf select{width:100%;border:1px solid var(--bdr);border-radius:6px;padding:7px 8px;font-size:13px;color:var(--txt);background:#fff;-webkit-appearance:none}
+.tbar{position:sticky;top:62px;z-index:99;background:#fff;display:flex;border-bottom:2px solid var(--bdr)}
+.tab{flex:1;border:none;background:none;cursor:pointer;padding:9px 2px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px}
+.tab svg{width:18px;height:18px;stroke-width:2}
+.tab.on{color:var(--navy);border-bottom-color:var(--navy)}
+.tbadge{background:var(--er);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:2px;display:none}
+.tbadge.v{display:inline-block}
+.panel{display:none;padding:10px 10px 20px}
+.panel.on{display:block}
+.srow{display:flex;gap:6px;margin-bottom:9px}
+.sc{flex:1;background:#fff;border-radius:8px;padding:8px 4px;text-align:center;border:1px solid var(--bdr)}
+.sc-n{font-size:20px;font-weight:900;line-height:1}.sc-l{font-size:9px;color:var(--muted);margin-top:1px}
+.sc.t .sc-n{color:var(--navy)}.sc.ok .sc-n{color:var(--ok)}.sc.er .sc-n{color:var(--er)}.sc.wn .sc-n{color:var(--wn)}
+.arow{display:flex;gap:6px;margin-bottom:9px}
+.abtn{flex:1;padding:9px;border:none;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;color:#fff}
+.abtn.grn{background:var(--ok)}.abtn.red{background:var(--er)}
+.cg{background:#fff;border-radius:10px;margin-bottom:7px;border:1px solid var(--bdr);overflow:hidden}
+.cg-h{display:flex;align-items:center;gap:6px;padding:10px 11px;cursor:pointer;background:#F4F7FB}
+.cg.open .cg-h{border-bottom:1px solid var(--bdr)}
+.cg-n{flex:1;font-size:11px;font-weight:800;color:var(--navy);text-transform:uppercase}
+.cgb{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+.gb-nd{background:var(--bdr);color:var(--muted)}.gb-ok{background:var(--ok-bg);color:var(--ok)}.gb-er{background:var(--er-bg);color:var(--er)}.gb-wn{background:var(--wn-bg);color:var(--wn)}
+.cg-sa{font-size:10px;padding:4px 8px;border:none;background:var(--ok);color:#fff;border-radius:10px;font-weight:700}
+.chev{width:13px;height:13px;color:var(--muted);transition:transform .2s;flex-shrink:0}
+.cg.open .chev{transform:rotate(180deg)}
+.cg-body{display:none}.cg.open .cg-body{display:block}
+.cr{padding:9px 11px;border-top:1px solid var(--bdr)}
+.cr-top{display:flex;align-items:center;gap:5px;margin-bottom:6px}
+.cr-num{font-size:9px;font-weight:900;color:#fff;background:var(--muted);border-radius:10px;padding:1px 6px;min-width:22px;text-align:center}
+.cr-name{flex:1;font-size:12px;font-weight:700}.cr-type{font-size:10px;color:var(--muted)}
+.cr-ch{font-size:9px;background:var(--bg);border:1px solid var(--bdr);border-radius:4px;padding:1px 5px;color:var(--muted)}
+.sbrow{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.sb{padding:7px 2px;border:1.5px solid var(--bdr);border-radius:7px;font-size:10px;font-weight:700;text-align:center;cursor:pointer;background:#fff;color:var(--muted);line-height:1.3}
+.sb.s-ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.sb.s-er{background:var(--er-bg);border-color:var(--er);color:var(--er)}
+.sb.s-wn{background:var(--wn-bg);border-color:var(--wn);color:var(--wn)}
+.sb.s-in{background:var(--inf-bg);border-color:var(--inf);color:var(--inf)}
+.rb{display:none;margin-top:6px}.rb.vis{display:block}
+.rb label{display:block;font-size:10px;font-weight:800;color:var(--er);text-transform:uppercase;margin-bottom:3px}
+.rb textarea{width:100%;border:1px solid var(--er);border-radius:6px;padding:7px 8px;font-size:12px;background:var(--er-bg);resize:none;font-family:inherit;min-height:48px}
+.hp-title{font-size:15px;font-weight:900;color:var(--navy);text-transform:uppercase;letter-spacing:.8px}
+.hp-sub{font-size:10px;color:var(--muted);margin-top:2px;margin-bottom:11px}
+.hp-sth{font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.5px;padding:7px 11px;background:var(--navy);color:#fff;border-radius:7px 7px 0 0;display:flex;align-items:center;justify-content:space-between}
+.hp-sth button{font-size:10px;padding:4px 10px;border:none;background:rgba(255,255,255,.2);color:#fff;border-radius:6px;font-weight:700}
+.hp-wrap{border:1px solid var(--bdr);border-top:none;border-radius:0 0 10px 10px;overflow:hidden;margin-bottom:14px}
+.eq{background:#fff;border-top:1px solid var(--bdr)}.eq:first-child{border-top:none}
+.eq-h{display:flex;align-items:center;gap:7px;padding:8px 11px;background:#F4F7FB;border-bottom:1px solid var(--bdr)}
+.eq-id{font-size:11px;font-weight:900;color:#fff;background:var(--navy);padding:2px 8px;border-radius:10px}
+.eq-loc{font-size:12px;font-weight:700;flex:1}
+.eq-dot{width:10px;height:10px;border-radius:50%;background:var(--bdr)}
+.eq-dot.d-ok{background:var(--ok)}.eq-dot.d-er{background:var(--er)}
+.eq-body{padding:9px 11px}
+.eq-side{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px}
+.eq-side:last-child{margin-bottom:0}
+.eq-sl{font-size:10px;font-weight:800;color:var(--muted);min-width:48px;padding-top:9px;text-transform:uppercase}
+.eq-sc{flex:1}
+.eq-brow{display:flex;gap:6px}
+.eb{flex:1;padding:9px;border:1.5px solid var(--bdr);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;background:#fff;color:var(--muted);text-align:center}
+.eb.e-ok{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.eb.e-er{background:var(--er-bg);border-color:var(--er);color:var(--er)}
+.eq-rb{display:none;margin-top:5px}.eq-rb.vis{display:block}
+.eq-rb textarea{width:100%;border:1px solid var(--er);border-radius:6px;padding:6px 8px;font-size:11px;background:var(--er-bg);font-family:inherit}
+.rsec{background:#fff;border-radius:10px;padding:12px;margin-bottom:9px;border:1px solid var(--bdr)}
+.rsec-t{font-size:11px;font-weight:900;color:var(--navy);text-transform:uppercase;margin-bottom:8px}
+.rta{width:100%;border:1px solid var(--bdr);border-radius:7px;padding:8px 10px;font-size:12px;color:var(--txt);resize:vertical;font-family:inherit;min-height:75px}
+.iss{background:var(--er-bg);border-left:3px solid var(--er);border-radius:0 5px 5px 0;padding:6px 9px;margin-bottom:4px}
+.iss-n{font-size:11px;font-weight:800;color:var(--er)}.iss-r{font-size:11px;color:var(--txt);margin-top:2px}
+.no-iss{text-align:center;color:var(--ok);font-size:12px;font-weight:800;padding:12px;background:var(--ok-bg);border-radius:8px}
+.expbtn{display:block;width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:800;margin-top:4px}
+.expbtn.grey{background:#546E7A;margin-top:7px}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#1C2B3A;color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+.hist-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.hist-hdr-t{font-size:11px;font-weight:900;color:var(--navy);text-transform:uppercase}
+.hist-hdr-clr{font-size:10px;font-weight:700;color:var(--er);background:var(--er-bg);border:none;border-radius:6px;padding:4px 10px;cursor:pointer}
+.hist-item{background:#fff;border:1px solid var(--bdr);border-radius:8px;margin-bottom:6px;overflow:hidden}
+.hist-h{display:flex;align-items:center;gap:8px;padding:9px 11px}
+.hist-info{flex:1}
+.hist-date{font-size:12px;font-weight:800;color:var(--navy)}
+.hist-sub{font-size:10px;color:var(--muted);margin-top:1px}
+.hist-stats{font-size:10px;margin-top:3px}
+.hist-acts{display:flex;gap:5px;flex-shrink:0}
+.hist-btn{font-size:10px;font-weight:700;padding:6px 11px;border:none;border-radius:6px;cursor:pointer}
+.hbtn-exp{background:var(--navy);color:#fff}
+.hbtn-del{background:var(--er-bg);color:var(--er)}
+.no-hist{text-align:center;color:var(--muted);font-size:12px;padding:16px;background:#fff;border-radius:8px;border:1px solid var(--bdr)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-row">
+    <div><h1>SAR - MUZ01 Station Inspection</h1><p>Saudi Arabia Railways · For Internal Use Only</p></div>
+    <button class="new-btn" onclick="newInsp()">New</button>
+  </div>
+</div>
+
+<div class="ib">
+  <div class="inf"><label>Date</label><input type="date" id="fDate" onchange="S.date=this.value;save()"></div>
+  <div class="inf"><label>Shift</label>
+    <select id="fShift" onchange="S.shift=this.value;save()">
+      <option value="">Shift</option>
+      <option value="Early (07:00-15:00)">Early</option>
+      <option value="Late (15:00-23:00)">Late</option>
+      <option value="Night (23:00-07:00)">Night</option>
+    </select>
+  </div>
+  <div class="inf"><label>Inspector</label><input type="text" id="fInsp" placeholder="Name" onchange="S.inspector=this.value;save()"></div>
+</div>
+
+<div class="tbar">
+  <button class="tab on" id="t-cameras" onclick="showTab('cameras')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="2" y="5" width="20" height="15" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+    <span>Cameras<span id="badge-cam" class="tbadge"></span></span>
+  </button>
+  <button class="tab" id="t-helppoints" onclick="showTab('helppoints')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/></svg>
+    <span>HelpPoints<span id="badge-hp" class="tbadge"></span></span>
+  </button>
+  <button class="tab" id="t-report" onclick="showTab('report')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Report
+  </button>
+</div>
+
+<div id="toast" class="toast"></div>
+<div id="panel-cameras" class="panel on"></div>
+<div id="panel-helppoints" class="panel"></div>
+<div id="panel-report" class="panel"></div>
+
+<script>
+var CG=[
+  {j:"Videojet 49",c:[[1,"MUZ01-FC113","Cam 3",191],[2,"MUZ01-FC114","Cam 4",192],[3,"MUZ01-MC24","PTZ 1",189],[4,"MUZ01-MC25","PTZ 2",190]]},
+  {j:"Vid03jet 01",c:[[5,"MUZ01-MC01","PTZ 1",33],[6,"MUZ01-MC02","PTZ 2",34],[7,"MUZ01-MC03","PTZ 3",35],[8,"MUZ01-MC04","PTZ 4",36]]},
+  {j:"Vid04jet 02",c:[[9,"MUZ01-MC05","PTZ 1",37],[10,"MUZ01-MC06","PTZ 2",38],[11,"MUZ01-MC07","PTZ 3",39],[12,"MUZ01-MC08","PTZ 4",40]]},
+  {j:"Vid05jet 03",c:[[13,"MUZ01-MC09","PTZ 1",41],[14,"MUZ01-MC10","PTZ 2",42],[15,"MUZ01-MC11","PTZ 3",43],[16,"MUZ01-MC12","PTZ 4",44]]},
+  {j:"Vid06jet 04",c:[[17,"MUZ01-MC13","PTZ 1",45],[18,"MUZ01-MC14t","PTZ 2",46],[19,"MUZ01-MC15","PTZ 3",47]]},
+  {j:"Vid07jet 05",c:[[20,"MUZ01-FC02","Cam 1",49],[21,"MUZ01-FC03","Cam 2",50],[22,"MUZ01-FC05","Cam 3",51],[23,"MUZ01-FC06","Cam 4",52]]},
+  {j:"Vid08jet 06",c:[[24,"MUZ01-FC07","Cam 1",53],[25,"MUZ01-FC08","Cam 2",54],[26,"MUZ01-FC09","Cam 3",55],[27,"MUZ01-FC12","Cam 4",56]]},
+  {j:"Vid09jet 07",c:[[28,"MUZ01-FC13","Cam 1",57],[29,"MUZ01-FC14","Cam 2",58],[30,"MUZ01-FC15","Cam 3",59],[31,"MUZ01-FC16","Cam 4",60]]},
+  {j:"Vid10jet 08",c:[[32,"MUZ01-FC18","Cam 1",61],[33,"MUZ01-FC19","Cam 2",62],[34,"MUZ01-FC20","Cam 3",63],[35,"MUZ01-FC21","Cam 4",64]]},
+  {j:"Vid11jet 09",c:[[36,"MUZ01-FC24","Cam 1",65],[37,"MUZ01-FC26","Cam 2",66],[38,"MUZ01-FC27","Cam 3",67],[39,"MUZ01-FC28","Cam 4",68]]},
+  {j:"Vid12jet 10",c:[[40,"MUZ01-FC29","Cam 1",69],[41,"MUZ01-FC30","Cam 2",70],[42,"MUZ01-FC31","Cam 3",71],[43,"MUZ01-FC33","Cam 4",72]]},
+  {j:"Vid13jet 11",c:[[44,"MUZ01-FC34","Cam 1",73],[45,"MUZ01-FC35","Cam 2",74],[46,"MUZ01-FC38","Cam 3",75],[47,"MUZ01-FC39","Cam 4",76]]},
+  {j:"Vid14jet 12",c:[[48,"MUZ01-FC40","Cam 1",77],[49,"MUZ01-FC41","Cam 2",78],[50,"MUZ01-FC42","Cam 3",79],[51,"MUZ01-FC43","Cam 4",80]]},
+  {j:"Vid15jet 13",c:[[52,"MUZ01-FC44","Cam 1",81],[53,"MUZ01-FC45","Cam 2",82],[54,"MUZ01-FC47","Cam 3",83],[55,"MUZ01-FC49","Cam 4",84]]},
+  {j:"Vid16jet 14",c:[[56,"MUZ01-FC50","Cam 1",85],[57,"MUZ01-FC51","Cam 2",86],[58,"MUZ01-FC53","Cam 3",87],[59,"MUZ01-FC54","Cam 4",88]]},
+  {j:"Vid17jet 15",c:[[60,"MUZ01-FC55","Cam 1",89],[61,"MUZ01-FC56","Cam 2",90],[62,"MUZ01-FC59","Cam 3",91],[63,"MUZ01-FC61","Cam 4",92]]},
+  {j:"Vid18jet 16",c:[[64,"MUZ01-FC62","Cam 1",93],[65,"MUZ01-FC63","Cam 2",94],[66,"MUZ01-FC65","Cam 3",95],[67,"MUZ01-FC67","Cam 4",96]]},
+  {j:"Vid19jet 17",c:[[68,"MUZ01-FC68","Cam 1",97],[69,"MUZ01-FC69","Cam 2",98],[70,"MUZ01-FC71","Cam 3",99],[71,"MUZ01-FC74","Cam 4",100]]},
+  {j:"Vid20jet 18",c:[[72,"MUZ01-FC75","Cam 1",101],[73,"MUZ01-FC76","Cam 2",102],[74,"MUZ01-FC77","Cam 3",103],[75,"MUZ01-FC80","Cam 4",104]]},
+  {j:"Vid21jet 19",c:[[76,"MUZ01-FC81","Cam 1",105],[77,"MUZ01-FC82","Cam 2",106],[78,"MUZ01-FC83","Cam 3",107],[79,"MUZ01-FC84","Cam 4",108]]},
+  {j:"Vid22jet 20",c:[[80,"MUZ01-FC85","Cam 1",109],[81,"MUZ01-FC86","Cam 2",110],[82,"MUZ01-FC87","Cam 3",111],[83,"MUZ01-FC88","Cam 4",112]]},
+  {j:"Vid23jet 21",c:[[84,"MUZ01-FC89","Cam 1",113],[85,"MUZ01-FC90","Cam 2",114],[86,"MUZ01-FC91","Cam 3",115],[87,"MUZ01-FC92","Cam 4",116]]},
+  {j:"Vid24jet 22",c:[[88,"MUZ01-FC93","Cam 1",117],[89,"MUZ01-FC94","Cam 2",118],[90,"MUZ01-FC95","Cam 3",119],[91,"MUZ01-FC96","Cam 4",120]]},
+  {j:"Vid25jet 23",c:[[92,"MUZ01-FC97","Cam 1",121],[93,"MUZ01-FCC01(L-06)","Cam 2",122],[94,"MUZ01-FCC02(L-05)","Cam 3",123],[95,"MUZ01-FCC03","Cam 4",124]]},
+  {j:"Vid26jet 24",c:[[96,"MUZ01-FCC04","Cam 1",125],[97,"MUZ01-FCC05(L-04)","Cam 2",126],[98,"MUZ01-FCC06","Cam 3",127],[99,"MUZ01-FCC07(L-03)","Cam 4",128]]},
+  {j:"Vid27jet 25",c:[[100,"MUZ01-FCC08","Cam 1",129],[101,"MUZ01-FCC09(L-02)","Cam 2",130],[102,"MUZ01-FCC10","Cam 3",131],[103,"MUZ01-FCC11(L-01)","Cam 4",132]]},
+  {j:"Vid28jet 26",c:[[104,"MUZ01-FCC12","Cam 1",133],[105,"MUZ01-FCC13(L-07)","Cam 2",134],[106,"MUZ01-FCC14(L-08)","Cam 3",135],[107,"MUZ01-FCC15(L-09)","Cam 4",136]]},
+  {j:"Vid29jet 27",c:[[108,"MUZ01-FCC19","Cam 1",137],[109,"MUZ01-FCC20","Cam 2",138],[110,"MUZ01-FCC21","Cam 3",139],[111,"MUZ01-FC16(L-10)","Cam 4",140]]},
+  {j:"Vid30jet 28",c:[[112,"MUZ01-FCC17(L-11)","Cam 1",141],[113,"MUZ01-FCC18(L-12)","Cam 2",142],[114,"MUZ01-FCC22","Cam 3",143],[115,"MUZ01-FCC23","Cam 4",144]]},
+  {j:"Vid31jet 29",c:[[116,"MUZ01-FC24","Cam 1",145],[117,"MUZ01-FC01","Cam 2",146],[118,"MUZ01-FC04","Cam 3",147],[119,"MUZ01-FC10","Cam 4",148]]},
+  {j:"Vid32jet 30",c:[[120,"MUZ01-FC17","Cam 1",149],[121,"MUZ01-FC23","Cam 2",150],[122,"MUZ01-FC32","Cam 3",151],[123,"MUZ01-FC37","Cam 4",152]]},
+  {j:"Vid33jet 31",c:[[124,"MUZ01-FC22","Cam 1",153],[125,"MUZ01-FC36","Cam 2",154],[126,"MUZ01-FC46","Cam 3",155],[127,"MUZ01-FC52","Cam 4",156]]},
+  {j:"Vid34jet 32",c:[[128,"MUZ01-FC57","Cam 1",157],[129,"MUZ01-FC64","Cam 2",158],[130,"MUZ01-FC70","Cam 3",159],[131,"MUZ01-FC78","Cam 4",160]]},
+  {j:"Vid35jet 33",c:[[132,"MUZ01-FC98","Cam 1",161],[133,"MUZ01-FC99","Cam 2",162],[134,"MUZ01-FC100","Cam 3",163],[135,"MUZ01-FC101","Cam 4",164]]},
+  {j:"Vid36jet 34",c:[[136,"MUZ01-FC102","Cam 1",165],[137,"MUZ01-FC103","Cam 2",166],[138,"MUZ01-FC104","Cam 3",167],[139,"MUZ01-FC105","Cam 4",168]]},
+  {j:"Vid37jet 35",c:[[140,"MUZ01-FC106","Cam 1",169]]},
+  {j:"Vid38jet 36",c:[[141,"MUZ01-FCC25","Cam 2",174],[142,"MUZ01-FCC26","Cam 3",175]]},
+  {j:"Vid46jet 37",c:[[143,"MUZ01-FCC27","PTZ 1",177],[144,"MUZ01-FCC28","PTZ 2",178],[145,"MUZ01-MC16","PTZ 3",179],[146,"MUZ01-MC17","PTZ 4",180]]},
+  {j:"Vid47jet 38",c:[[147,"MUZ01-MC18","PTZ 1",181],[148,"MUZ01-MC19","PTZ 2",182],[149,"MUZ01-MC20","PTZ 3",183],[150,"MUZ01-MC21","PTZ 4",184]]},
+  {j:"Vid48jet 39",c:[[151,"MUZ01-MC22","PTZ 1",185],[152,"MUZ01-MC23","PTZ 2",186],[153,"MUZ01-FC111","Cam 3",187],[154,"MUZ01-FC112","Cam 4",188]]}
+];
+var ELV=[{id:"L01",loc:"North"},{id:"L02",loc:"North"},{id:"L03",loc:"North"},{id:"L04",loc:"North"},{id:"L05",loc:"North"},{id:"L06",loc:"North"},{id:"L07",loc:"South"},{id:"L08",loc:"South"},{id:"L09",loc:"South"},{id:"L10",loc:"South"},{id:"L11",loc:"South"},{id:"L12",loc:"South"}];
+var PESB=[{id:"PESB01",plat:"Platform 1 North"},{id:"PESB02",plat:"Platform 1 North"},{id:"PESB03",plat:"Platform 1 North"},{id:"PESB04",plat:"Platform 2 South"},{id:"PESB05",plat:"Platform 2 South"},{id:"PESB06",plat:"Platform 2 South"},{id:"PESB07",plat:"Platform 3 South"},{id:"PESB08",plat:"Platform 3 South"},{id:"PESB09",plat:"Platform 3 South"}];
+
+var S={date:new Date().toISOString().slice(0,10),shift:"",inspector:"",cs:{},cr:{},es:{},ps:{},notes:"",resolved:""};
+
+function load(){try{var d=localStorage.getItem("sar6");if(d){S=JSON.parse(d);}}catch(e){}}
+function save(){try{localStorage.setItem("sar6",JSON.stringify(S));}catch(e){}badges();}
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.className="toast show";setTimeout(function(){t.className="toast";},2200);}
+
+function showTab(id){
+  ["cameras","helppoints","report"].forEach(function(x){
+    document.getElementById("panel-"+x).className="panel"+(x===id?" on":"");
+    document.getElementById("t-"+x).className="tab"+(x===id?" on":"");
+  });
+  if(id==="report")refreshRep();
+}
+
+// CAMERAS
+function buildCams(){
+  var p=document.getElementById("panel-cameras");
+  var h="<div class='srow'><div class='sc t'><div class='sc-n'>154</div><div class='sc-l'>Total</div></div><div class='sc ok'><div class='sc-n' id='cs-ok'>0</div><div class='sc-l'>Working</div></div><div class='sc er'><div class='sc-n' id='cs-er'>0</div><div class='sc-l'>Faulty</div></div><div class='sc wn'><div class='sc-n' id='cs-wn'>0</div><div class='sc-l'>Other</div></div></div>";
+  h+="<div class='arow'><button class='abtn grn' onclick='allCamsOk()'>All 154 Working</button><button class='abtn red' onclick='clearCams()'>Clear All</button></div>";
+  CG.forEach(function(g,gi){
+    h+="<div class='cg' id='cg"+gi+"'><div class='cg-h' onclick='toggleCg("+gi+")'><span class='cg-n'>"+g.j+"</span><span class='cgb gb-nd' id='cgb"+gi+"'>"+g.c.length+" cam"+(g.c.length>1?"s":"")+"</span><button class='cg-sa' onclick='event.stopPropagation();grpOk("+gi+")'>All OK</button><svg class='chev' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5'><polyline points='6 9 12 15 18 9'/></svg></div><div class='cg-body' id='cgb-"+gi+"'>";
+    g.c.forEach(function(cam){
+      var n=cam[0],nm=cam[1],tp=cam[2],ch=cam[3];
+      h+="<div class='cr' id='cr"+n+"'><div class='cr-top'><span class='cr-num'>"+n+"</span><span class='cr-name'>"+nm+"</span><span class='cr-type'>"+tp+"</span><span class='cr-ch'>Ch "+ch+"</span></div>";
+      h+="<div class='sbrow'>";
+      h+="<button class='sb' id='sb"+n+"ok' onclick='setC("+n+",\"ok\")'>Working</button>";
+      h+="<button class='sb' id='sb"+n+"er' onclick='setC("+n+",\"er\")'>Faulty</button>";
+      h+="<button class='sb' id='sb"+n+"wn' onclick='setC("+n+",\"wn\")'>Cleaning</button>";
+      h+="<button class='sb' id='sb"+n+"in' onclick='setC("+n+",\"in\")'>Unclear</button>";
+      h+="</div><div class='rb' id='rb"+n+"'><label>Fault Reason</label><textarea rows='2' placeholder='Describe the issue...' oninput='S.cr["+n+"]=this.value;save()'></textarea></div></div>";
+    });
+    h+="</div></div>";
+  });
+  p.innerHTML=h;
+  updateCamAll();
+}
+
+function toggleCg(gi){
+  var d=document.getElementById("cg"+gi);
+  var b=document.getElementById("cgb-"+gi);
+  if(d.className==="cg"){d.className="cg open";b.style.display="block";}
+  else{d.className="cg";b.style.display="";}
+}
+
+function setC(n,st){
+  if(S.cs[n]===st){delete S.cs[n];delete S.cr[n];}
+  else{S.cs[n]=st;if(st==="ok")delete S.cr[n];}
+  save();updateCamRow(n);updateCamStats();updateGrpBadge(n);
+}
+
+function updateCamRow(n){
+  var st=S.cs[n]||null;
+  ["ok","er","wn","in"].forEach(function(s){
+    var b=document.getElementById("sb"+n+s);
+    if(b)b.className="sb"+(st===s?" s-"+s:"");
+  });
+  var rb=document.getElementById("rb"+n);
+  if(rb){
+    rb.className="rb"+(st&&st!=="ok"?" vis":"");
+    var ta=rb.querySelector("textarea");
+    if(ta)ta.value=S.cr[n]||"";
+  }
+}
+
+function updateCamAll(){
+  CG.forEach(function(g,gi){g.c.forEach(function(c){updateCamRow(c[0]);});updateGrpBadgeIdx(gi);});
+  updateCamStats();
+}
+
+function updateGrpBadge(n){
+  CG.forEach(function(g,gi){if(g.c.some(function(c){return c[0]===n;}))updateGrpBadgeIdx(gi);});
+}
+
+function updateGrpBadgeIdx(gi){
+  var g=CG[gi],sts=g.c.map(function(c){return S.cs[c[0]]||null;});
+  var b=document.getElementById("cgb"+gi);if(!b)return;
+  if(!sts.some(function(s){return s;})){b.className="cgb gb-nd";b.textContent=g.c.length+" cam"+(g.c.length>1?"s":"");}
+  else if(sts.every(function(s){return s==="ok";})){b.className="cgb gb-ok";b.textContent="All OK";}
+  else if(sts.some(function(s){return s==="er";})){b.className="cgb gb-er";b.textContent=sts.filter(function(s){return s==="er";}).length+" Faulty";}
+  else{b.className="cgb gb-wn";b.textContent="Issues";}
+}
+
+function updateCamStats(){
+  var a=CG.reduce(function(acc,g){return acc.concat(g.c.map(function(c){return S.cs[c[0]]||null;}));},[]);
+  var ok=document.getElementById("cs-ok"),er=document.getElementById("cs-er"),wn=document.getElementById("cs-wn");
+  if(ok)ok.textContent=a.filter(function(s){return s==="ok";}).length;
+  if(er)er.textContent=a.filter(function(s){return s==="er";}).length;
+  if(wn)wn.textContent=a.filter(function(s){return s&&s!=="ok"&&s!=="er";}).length;
+}
+
+function allCamsOk(){
+  CG.forEach(function(g){g.c.forEach(function(c){S.cs[c[0]]="ok";delete S.cr[c[0]];});});
+  save();updateCamAll();toast("All 154 cameras marked Working");
+}
+function clearCams(){S.cs={};S.cr={};save();updateCamAll();toast("Cleared all camera statuses");}
+function grpOk(gi){
+  CG[gi].c.forEach(function(c){S.cs[c[0]]="ok";delete S.cr[c[0]];});
+  save();CG[gi].c.forEach(function(c){updateCamRow(c[0]);});updateGrpBadgeIdx(gi);updateCamStats();
+  toast(CG[gi].j+" - All OK");
+}
+
+// HELP POINTS
+function buildHP(){
+  var p=document.getElementById("panel-helppoints");
+  var h="<div class='hp-title'>HELP POINTS CHECK UP</div><div class='hp-sub'>MUZ01 Station - Lifts & Emergency Safety Points</div>";
+  h+="<div class='hp-sth'>LIFTS HELP POINTS INSPECTION<button onclick='allElvOk()'>All Working</button></div><div class='hp-wrap' id='elv-wrap'>";
+  ELV.forEach(function(e){h+=mkEq("elv",e.id,"MUZ01-"+e.id+" - "+e.loc);});
+  h+="</div>";
+  h+="<div class='hp-sth'>PESB STATUS INSPECTION<button onclick='allPespOk()'>All Working</button></div><div class='hp-wrap' id='pesp-wrap'>";
+  PESB.forEach(function(e){h+=mkPesp(e.id,"MUZ01-"+e.id+" - "+e.plat);});
+  h+="</div>";
+  p.innerHTML=h;
+  updateEqAll();
+}
+
+function mkEq(type,id,label){
+  var num=id.replace(/[A-Z]+/g,"");
+  var h="<div class='eq' id='eq-"+type+"-"+id+"'>";
+  h+="<div class='eq-h'><span class='eq-id'>"+num+"</span><span class='eq-loc'>"+label+"</span><div class='eq-dot' id='dot-"+type+"-"+id+"'></div></div>";
+  h+="<div class='eq-body'>";
+  ["out","in"].forEach(function(side){
+    var sl=side==="out"?"Outside":"Inside";
+    h+="<div class='eq-side'><div class='eq-sl'>"+sl+"</div><div class='eq-sc'><div class='eq-brow'>";
+    h+="<button class='eb' id='eb-"+type+"-"+id+"-"+side+"-ok' onclick='setEq(\""+type+"\",\""+id+"\",\""+side+"\",\"ok\")'>Working</button>";
+    h+="<button class='eb' id='eb-"+type+"-"+id+"-"+side+"-er' onclick='setEq(\""+type+"\",\""+id+"\",\""+side+"\",\"er\")'>Has Issue</button>";
+    h+="</div><div class='eq-rb' id='eqrb-"+type+"-"+id+"-"+side+"'><textarea placeholder='Describe the issue...' oninput='setEqR(\""+type+"\",\""+id+"\",\""+side+"R\",this.value)'></textarea></div></div></div>";
+  });
+  h+="</div></div>";
+  return h;
+}
+
+function mkPesp(id,label){
+  var num=id.replace(/[A-Z]+/g,"");
+  var h="<div class='eq' id='eq-pesp-"+id+"'>";
+  h+="<div class='eq-h'><span class='eq-id'>"+num+"</span><span class='eq-loc'>"+label+"</span><div class='eq-dot' id='dot-pesp-"+id+"'></div></div>";
+  h+="<div class='eq-body'>";
+  h+="<div class='eq-side'><div class='eq-sc'><div class='eq-brow'>";
+  h+="<button class='eb' id='eb-pesp-"+id+"-out-ok' onclick='setEq(\"pesp\",\""+id+"\",\"out\",\"ok\")'>Working</button>";
+  h+="<button class='eb' id='eb-pesp-"+id+"-out-er' onclick='setEq(\"pesp\",\""+id+"\",\"out\",\"er\")'>Has Issue</button>";
+  h+="</div><div class='eq-rb' id='eqrb-pesp-"+id+"-out'><textarea placeholder='Describe the issue...' oninput='setEqR(\"pesp\",\""+id+"\",\"outR\",this.value)'></textarea></div></div></div>";
+  h+="</div></div>";
+  return h;
+}
+
+function getEqSt(type,id){return type==="elv"?(S.es[id]||{}):(S.ps[id]||{});}
+function setEqR(type,id,key,val){var o=type==="elv"?S.es:S.ps;if(!o[id])o[id]={};o[id][key]=val;save();}
+
+function setEq(type,id,side,status){
+  var o=type==="elv"?S.es:S.ps;if(!o[id])o[id]={};
+  var rk=side+"R";
+  if(o[id][side]===status){delete o[id][side];delete o[id][rk];}
+  else{o[id][side]=status;if(status==="ok"){delete o[id][rk];var ta=document.querySelector("#eqrb-"+type+"-"+id+"-"+side+" textarea");if(ta)ta.value="";}}
+  save();updateEqCard(type,id);
+}
+
+function updateEqCard(type,id){
+  var st=getEqSt(type,id);
+  var sides=type==="pesp"?["out"]:["out","in"];
+  sides.forEach(function(side){
+    var s=st[side]||null;
+    var ok=document.getElementById("eb-"+type+"-"+id+"-"+side+"-ok");
+    var er=document.getElementById("eb-"+type+"-"+id+"-"+side+"-er");
+    var rb=document.getElementById("eqrb-"+type+"-"+id+"-"+side);
+    if(ok)ok.className="eb"+(s==="ok"?" e-ok":"");
+    if(er)er.className="eb"+(s==="er"?" e-er":"");
+    if(rb){rb.className="eq-rb"+(s==="er"?" vis":"");var ta=rb.querySelector("textarea");if(ta)ta.value=st[side+"R"]||"";}
+  });
+  var dot=document.getElementById("dot-"+type+"-"+id);
+  if(type==="pesp"){
+    if(dot)dot.className="eq-dot"+(st.out==="er"?" d-er":st.out==="ok"?" d-ok":"");
+  } else {
+    if(dot)dot.className="eq-dot"+(st.out==="er"||st.in==="er"?" d-er":st.out==="ok"&&st.in==="ok"?" d-ok":"");
+  }
+}
+
+function updateEqAll(){ELV.forEach(function(e){updateEqCard("elv",e.id);});PESB.forEach(function(e){updateEqCard("pesp",e.id);});}
+function allElvOk(){ELV.forEach(function(e){S.es[e.id]={out:"ok",in:"ok"};});save();ELV.forEach(function(e){updateEqCard("elv",e.id);});toast("All Lifts Working");}
+function allPespOk(){PESB.forEach(function(e){S.ps[e.id]={out:"ok"};});save();PESB.forEach(function(e){updateEqCard("pesp",e.id);});toast("All PESBs Working");}
+
+// REPORT
+function buildRep(){
+  var p=document.getElementById("panel-report");
+  p.innerHTML="<div class='rsec'><div class='rsec-t'>Notes / Observations</div><textarea class='rta' id='ta-notes' placeholder='General notes...' oninput='S.notes=this.value;save()'></textarea></div><div class='rsec'><div class='rsec-t'>Resolved Issues</div><textarea class='rta' id='ta-res' placeholder='Issues resolved this shift...' oninput='S.resolved=this.value;save()'></textarea></div><div class='rsec'><div class='rsec-t'>Active Issues Log</div><div id='iss-log'></div></div><button class='expbtn' onclick='exportPDF()'>Export PDF Report</button><button class='expbtn grey' onclick='newInsp()'>New Inspection</button><div class='rsec' style='margin-top:10px'><div class='hist-hdr'><span class='hist-hdr-t'>&#128203; Report History</span><button class='hist-hdr-clr' onclick='clearAllHist()'>Clear All</button></div><div id='hist-list'>"+renderHistory()+"</div></div>";
+}
+
+function refreshRep(){
+  var tn=document.getElementById("ta-notes");if(tn)tn.value=S.notes;
+  var tr=document.getElementById("ta-res");if(tr)tr.value=S.resolved;
+  var log=document.getElementById("iss-log");if(!log)return;
+  var iss=[],lbl={er:"Faulty",wn:"Needs Cleaning",in:"Unclear View"};
+  CG.forEach(function(g){g.c.forEach(function(c){var n=c[0],nm=c[1],tp=c[2],st=S.cs[n];if(st&&st!=="ok")iss.push({n:"#"+n+" "+nm+" ("+tp+")",s:lbl[st]||st,r:S.cr[n]||""});});});
+  ELV.forEach(function(e){var st=S.es[e.id]||{};var num=e.id.replace("L","");if(st.out==="er")iss.push({n:"L"+num+" ("+e.loc+") Outside",s:"Has Issue",r:st.outR||""});if(st.in==="er")iss.push({n:"L"+num+" ("+e.loc+") Inside",s:"Has Issue",r:st.inR||""});});
+  PESB.forEach(function(e){var st=S.ps[e.id]||{};var num=e.id.replace("PESB","");if(st.out==="er")iss.push({n:"PESB"+num+" ("+e.plat+")",s:"Has Issue",r:st.outR||""});});
+  if(!iss.length){log.innerHTML="<div class='no-iss'>No active issues - All systems nominal</div>";}
+  else{log.innerHTML=iss.map(function(i){return"<div class='iss'><div class='iss-n'>"+i.n+" - "+i.s+"</div>"+(i.r?"<div class='iss-r'>"+i.r+"</div>":"")+"</div>";}).join("");}
+}
+
+function badges(){
+  var ce=CG.reduce(function(a,g){return a+g.c.filter(function(c){return S.cs[c[0]]==="er";}).length;},0);
+  var cb=document.getElementById("badge-cam");if(cb){cb.textContent=ce;cb.className="tbadge"+(ce>0?" v":"");}
+  var he=0;
+  ELV.forEach(function(e){var s=S.es[e.id]||{};if(s.out==="er"||s.in==="er")he++;});
+  PESB.forEach(function(e){var s=S.ps[e.id]||{};if(s.out==="er")he++;});
+  var hb=document.getElementById("badge-hp");if(hb){hb.textContent=he;hb.className="tbadge"+(he>0?" v":"");}
+}
+
+function exportPDF(){
+  saveToHistory();
+  var date=S.date||"N/A",shift=S.shift||"N/A",insp=S.inspector||"N/A";
+  var ok=0,er=0,oth=0,nc=0,iss=[];
+  var lbl={er:"Faulty",wn:"Needs Cleaning",in:"Unclear View"};
+  CG.forEach(function(g){g.c.forEach(function(c){var n=c[0],nm=c[1],tp=c[2],st=S.cs[n];if(!st){nc++;return;}if(st==="ok")ok++;else{if(st==="er")er++;else oth++;iss.push({n:"#"+n+" "+nm,s:lbl[st]||st,r:S.cr[n]||""});}});});
+  function sc(s){return s==="ok"?"<td style='color:#1A7A45;font-weight:700'>Working</td>":s==="er"?"<td style='color:#B5291B;font-weight:700'>Has Issue</td>":"<td style='color:#999'>--</td>";}
+  var er2=ELV.map(function(e,i){var s=S.es[e.id]||{};return"<tr><td>"+String(i+1).padStart(2,"0")+"</td><td>MUZ01-"+e.id+" - "+e.loc+"</td>"+sc(s.out)+"<td>"+(s.outR||"--")+"</td>"+sc(s.in)+"<td>"+(s.inR||"--")+"</td></tr>";}).join("");
+  var pr=PESB.map(function(e,i){var s=S.ps[e.id]||{};return"<tr><td>"+String(i+1).padStart(2,"0")+"</td><td>MUZ01-"+e.id+" - "+e.plat+"</td>"+sc(s.out)+"<td>"+(s.outR||"--")+"</td></tr>";}).join("");
+  var rpt="<!DOCTYPE html><html><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>SAR Report</title><style>body{font-family:Arial,sans-serif;font-size:11px;padding:15px;color:#111}.hdr{background:#003B6F;color:#fff;padding:12px;margin-bottom:12px;border-radius:4px}.hdr h1{font-size:15px;margin:0 0 3px}.hdr p{margin:0;font-size:9px;opacity:.8}.meta{display:flex;gap:12px;background:#EDF1F7;padding:8px 12px;border-radius:4px;margin-bottom:12px}.mf{flex:1}.mf b{display:block;font-size:9px;text-transform:uppercase;color:#6B7D90}.mf span{font-size:14px;font-weight:800;color:#003B6F}.sec{margin-bottom:12px}.sec-t{font-size:10px;font-weight:800;text-transform:uppercase;background:#003B6F;color:#fff;padding:5px 9px;border-radius:4px 4px 0 0}.sec-b{border:1px solid #ccc;border-top:none;padding:9px;border-radius:0 0 4px 4px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:9px}.stat{text-align:center;padding:7px;border:1px solid #ddd;border-radius:4px}.stat .n{font-size:20px;font-weight:900}.stat .l{font-size:9px;color:#666}.stat.ok .n{color:#1A7A45}.stat.er .n{color:#B5291B}.stat.wn .n{color:#A06C0A}.stat.nd .n{color:#999}.ir{background:#FDEDEB;border-left:3px solid #B5291B;padding:4px 7px;margin-bottom:3px;border-radius:0 3px 3px 0;font-size:11px}.ir b{color:#B5291B}table{width:100%;border-collapse:collapse;font-size:10px}th{background:#EDF1F7;text-align:left;padding:4px 6px;border:1px solid #ccc}td{padding:4px 6px;border:1px solid #ccc}.nb{background:#f8f8f8;border:1px solid #ddd;padding:7px;border-radius:3px;white-space:pre-wrap;min-height:25px}.sig{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}.sig div{border-top:1px solid #333;padding-top:3px;font-size:10px}.pbtn{display:block;width:100%;margin:14px 0 0;padding:11px;background:#003B6F;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:800;cursor:pointer}@media print{.pbtn{display:none}}</style></head><body>";
+  rpt+="<div class='hdr'><h1>SAR - MUZ01 Daily Inspection Report</h1><p>Saudi Arabia Railways - Station Operations - For Internal Use Only</p></div>";
+  rpt+="<div class='meta'><div class='mf'><b>Date</b><span>"+date+"</span></div><div class='mf'><b>Shift</b><span>"+shift+"</span></div><div class='mf'><b>Inspector</b><span>"+insp+"</span></div><div class='mf'><b>Station</b><span>MUZ01</span></div></div>";
+  rpt+="<div class='sec'><div class='sec-t'>Camera Status</div><div class='sec-b'><div class='grid'><div class='stat ok'><div class='n'>"+ok+"</div><div class='l'>Working</div></div><div class='stat er'><div class='n'>"+er+"</div><div class='l'>Faulty</div></div><div class='stat wn'><div class='n'>"+oth+"</div><div class='l'>Other</div></div><div class='stat nd'><div class='n'>"+nc+"</div><div class='l'>Unchecked</div></div></div>";
+  rpt+=iss.length?iss.map(function(i){return"<div class='ir'><b>"+i.n+" - "+i.s+"</b>"+(i.r?"<br>"+i.r:"")+"</div>";}).join(""):"<span style='color:#1A7A45;font-weight:700'>All checked cameras working</span>";
+  rpt+="</div></div>";
+  rpt+="<div class='sec'><div class='sec-t'>Lifts Help Points Status</div><div class='sec-b'><table><tr><th>#</th><th>Location</th><th>Outside</th><th>Notes</th><th>Inside</th><th>Notes</th></tr>"+er2+"</table></div></div>";
+  rpt+="<div class='sec'><div class='sec-t'>PESB Status</div><div class='sec-b'><table><tr><th>#</th><th>Platform</th><th>Status</th><th>Notes</th></tr>"+pr+"</table></div></div>";
+  rpt+="<div class='sec'><div class='sec-t'>Notes</div><div class='sec-b'><div class='nb'>"+(S.notes||"No notes.")+"</div></div></div>";
+  rpt+="<div class='sec'><div class='sec-t'>Resolved Issues</div><div class='sec-b'><div class='nb'>"+(S.resolved||"None.")+"</div></div></div>";
+  rpt+="<div class='sig'><div>Inspector: "+insp+"</div><div>Date: "+date+" | Shift: "+shift+"</div></div>";
+  rpt+="<button class='pbtn' onclick='window.print()'>&#128438; Print / Save as PDF</button>";
+  rpt+="</body></html>";
+  var win=window.open("","_blank");
+  if(!win){toast("Please allow popups for this site");return;}
+  win.document.write(rpt);
+  win.document.close();
+  win.focus();
+  setTimeout(function(){win.print();},600);
+  toast("Report ready \u2014 choose \u2018Save as PDF\u2019 in the print dialog");
+}
+
+function newInsp(){
+  saveToHistory();
+  S={date:new Date().toISOString().slice(0,10),shift:"",inspector:"",cs:{},cr:{},es:{},ps:{},notes:"",resolved:""};
+  save();location.reload();
+}
+
+function saveToHistory(){
+  if(!S.date&&!S.shift&&!S.inspector) return;
+  try{
+    var hist=JSON.parse(localStorage.getItem("sar6_hist")||"[]");
+    // avoid duplicate: same date+shift+inspector
+    var dup=hist.findIndex(function(h){return h.date===S.date&&h.shift===S.shift&&h.inspector===S.inspector;});
+    var entry=JSON.parse(JSON.stringify(S));
+    entry._saved=new Date().toISOString();
+    if(dup>=0) hist[dup]=entry; else hist.unshift(entry);
+    if(hist.length>100) hist=hist.slice(0,100);
+    localStorage.setItem("sar6_hist",JSON.stringify(hist));
+  }catch(e){}
+}
+
+function renderHistory(){
+  try{
+    var hist=JSON.parse(localStorage.getItem("sar6_hist")||"[]");
+    if(!hist.length) return "<div class='no-hist'>No saved reports yet.<br>Reports are saved automatically when you Export or start a New Inspection.</div>";
+    return hist.map(function(h,i){
+      var ok=0,er=0,oth=0,nc=0;
+      CG.forEach(function(g){g.c.forEach(function(c){var st=(h.cs||{})[c[0]];if(!st)nc++;else if(st==="ok")ok++;else if(st==="er")er++;else oth++;});});
+      var saved=h._saved?new Date(h._saved).toLocaleString("en-GB",{day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}):"";
+      var statsHtml="<span style='color:var(--ok)'>&#9679; "+ok+" OK</span> &nbsp;<span style='color:var(--er)'>&#9679; "+er+" Faulty</span> &nbsp;<span style='color:var(--wn)'>&#9679; "+oth+" Other</span>"+(nc?" &nbsp;<span style='color:var(--muted)'>"+nc+" Unchecked</span>":"");
+      return "<div class='hist-item'><div class='hist-h'><div class='hist-info'><div class='hist-date'>"+h.date+" &nbsp;·&nbsp; "+(h.shift||"No shift selected")+"</div><div class='hist-sub'>"+(h.inspector||"No inspector")+(saved?" &nbsp;·&nbsp; Saved: "+saved:"")+"</div><div class='hist-stats'>"+statsHtml+"</div></div><div class='hist-acts'><button class='hist-btn hbtn-exp' onclick='reExport("+i+")'>Export</button><button class='hist-btn hbtn-del' onclick='delHist("+i+")'>Del</button></div></div></div>";
+    }).join("");
+  }catch(e){return "<div class='no-hist'>Error loading history</div>";}
+}
+
+function reExport(idx){
+  try{
+    var hist=JSON.parse(localStorage.getItem("sar6_hist")||"[]");
+    var orig=JSON.parse(JSON.stringify(S));
+    S=hist[idx];
+    exportPDF();
+    S=orig;
+  }catch(e){}
+}
+
+function delHist(idx){
+  try{
+    var hist=JSON.parse(localStorage.getItem("sar6_hist")||"[]");
+    hist.splice(idx,1);
+    localStorage.setItem("sar6_hist",JSON.stringify(hist));
+    document.getElementById("hist-list").innerHTML=renderHistory();
+    toast("Report removed from history");
+  }catch(e){}
+}
+
+function clearAllHist(){
+  if(!confirm("Clear all saved report history?")) return;
+  localStorage.removeItem("sar6_hist");
+  document.getElementById("hist-list").innerHTML=renderHistory();
+  toast("History cleared");
+}
+
+// INIT
+load();
+document.getElementById("fDate").value=S.date;
+document.getElementById("fShift").value=S.shift;
+document.getElementById("fInsp").value=S.inspector;
+buildCams();
+buildHP();
+buildRep();
+badges();
+</script>
+</body>
+</html>
